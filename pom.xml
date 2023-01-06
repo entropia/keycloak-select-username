@@ -3,10 +3,10 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-parent</artifactId>
-        <version>11.0.0</version>
+        <version>16.1.0</version>
     </parent>
 
-    <name>Require Role</name>
+    <name>Keycloak Select Username</name>
     <description/>
     <modelVersion>4.0.0</modelVersion>
 

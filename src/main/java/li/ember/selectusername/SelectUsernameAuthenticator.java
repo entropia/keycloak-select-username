@@ -10,11 +10,11 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectUsername implements AuthenticatorFactory, Authenticator {
+public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authenticator {
     public static final String USERNAME_ATTRIBUTE = "username-attribute";
     public static final String PROVIDER_ID = "select-username";
 
-    public static final SelectUsername ROLE_AUTHENTICATOR = new SelectUsername();
+    public static final SelectUsernameAuthenticator ROLE_AUTHENTICATOR = new SelectUsernameAuthenticator();
 
     @Override
     public String getDisplayType() {
