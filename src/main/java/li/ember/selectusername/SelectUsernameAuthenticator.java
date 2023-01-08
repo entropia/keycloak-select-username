@@ -9,6 +9,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authenticator {
     public static final String USERNAME_ATTRIBUTE = "username-attribute";
@@ -26,11 +27,16 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
         return null;
     }
 
+    public List<String> getValidUsernames(AuthenticationFlowContext context) {
+        AuthenticatorConfigModel config = context.getAuthenticatorConfig();
+        return context.getUser().getAttributeStream(config.getConfig().get(USERNAME_ATTRIBUTE)).collect(Collectors.toList());
+    }
+
     @Override
     public void authenticate(AuthenticationFlowContext context) {
         AuthenticatorConfigModel config = context.getAuthenticatorConfig();
 
-        List<String> usernames = context.getUser().getAttribute(config.getConfig().get(USERNAME_ATTRIBUTE));
+        List<String> usernames = getValidUsernames(context);
 
         if (usernames.size() == 0) {
             context.success();
@@ -50,7 +56,7 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
             AuthenticatorConfigModel config = context.getAuthenticatorConfig();
 
             Response challenge = context.form()
-                    .setAttribute("usernames", context.getUser().getAttribute(config.getConfig().get(USERNAME_ATTRIBUTE)))
+                    .setAttribute("usernames", getValidUsernames(context))
                     .setError("Please select a valid username")
                     .createForm("select-username.ftl");
             context.failureChallenge(AuthenticationFlowError.INVALID_CREDENTIALS, challenge);
@@ -69,8 +75,7 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         String username = formData.getFirst("username");
 
-        List<String> usernames = context.getUser().getAttribute(config.getConfig().get(USERNAME_ATTRIBUTE));
-        return usernames.contains(username);
+        return getValidUsernames(context).contains(username);
     }
 
     @Override
