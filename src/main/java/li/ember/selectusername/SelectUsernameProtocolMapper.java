@@ -35,6 +35,11 @@ public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper imp
     }
 
     @Override
+    public int getPriority() {
+        return 10;
+    }
+
+    @Override
     public String getDisplayType() {
         return "Select Username Mapper";
     }
