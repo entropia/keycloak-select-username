@@ -10,10 +10,12 @@ import org.keycloak.representations.IDToken;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.nio.charset.StandardCharsets;
 
-public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
+public class SelectUsernameUuidProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
-    public static final String PROVIDER_ID = "select-username-oidc-mapper";
+    public static final String PROVIDER_ID = "select-username-uuid-oidc-mapper";
 
     static {
         // The builtin protocol mapper let the user define under which claim name (key)
@@ -26,7 +28,7 @@ public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper imp
         // this token mapper implements to decide which options to add to the config. So if this token
         // mapper should never be available for some sort of options, e.g. like the id token, just don't
         // implement the corresponding interface.
-        OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SelectUsernameProtocolMapper.class);
+        OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SelectUsernameUuidProtocolMapper.class);
     }
 
     @Override
@@ -36,17 +38,17 @@ public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper imp
 
     @Override
     public int getPriority() {
-        return 10;
+        return 100;
     }
 
     @Override
     public String getDisplayType() {
-        return "Select Username Mapper (sub)";
+        return "Select Username Mapper (UUID)";
     }
 
     @Override
     public String getHelpText() {
-        return null;
+        return "Generates a stable UUID to insert into the sub claim based on the selected username";
     }
 
     @Override
@@ -68,6 +70,7 @@ public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper imp
         } else {
             username = userSession.getNote("selected_username");
         }
-        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, username);
+        UUID uuid = UUID.nameUUIDFromBytes(username.getBytes(StandardCharsets.UTF_8));
+        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, uuid.toString());
     }
 }

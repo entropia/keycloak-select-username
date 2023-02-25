@@ -11,9 +11,9 @@ import org.keycloak.representations.IDToken;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
+public class SelectUsernameEmailProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
-    public static final String PROVIDER_ID = "select-username-oidc-mapper";
+    public static final String PROVIDER_ID = "select-username-email-oidc-mapper";
 
     static {
         // The builtin protocol mapper let the user define under which claim name (key)
@@ -41,12 +41,12 @@ public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper imp
 
     @Override
     public String getDisplayType() {
-        return "Select Username Mapper (sub)";
+        return "Select Username Mapper (Email)";
     }
 
     @Override
     public String getHelpText() {
-        return null;
+        return "Sets an email to the mapped username + suffix";
     }
 
     @Override
@@ -68,6 +68,7 @@ public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper imp
         } else {
             username = userSession.getNote("selected_username");
         }
-        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, username);
+	String email = username + "@gulas.ch";
+        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, email);
     }
 }

@@ -1,1 +1,3 @@
 li.ember.selectusername.SelectUsernameProtocolMapper
+li.ember.selectusername.SelectUsernameUuidProtocolMapper
+li.ember.selectusername.SelectUsernameEmailProtocolMapper
