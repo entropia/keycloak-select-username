@@ -43,6 +43,12 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
             return;
         }
 
+	if (usernames.size() == 1) {
+	    context.getAuthenticationSession().setUserSessionNote("selected_username", usernames.get(0));
+	    context.success();
+	    return;
+	}
+
         Response challenge = context.form()
                 .setAttribute("usernames", usernames)
                 .createForm("select-username.ftl");
