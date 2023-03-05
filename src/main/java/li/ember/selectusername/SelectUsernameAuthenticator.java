@@ -39,7 +39,7 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
         List<String> usernames = getValidUsernames(context);
 
         if (usernames.size() == 0) {
-            context.success();
+            context.failure(AuthenticationFlowError.ACCESS_DENIED);
             return;
         }
 
