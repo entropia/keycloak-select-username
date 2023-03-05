@@ -46,7 +46,7 @@ public class SelectUsernameProtocolMapper extends AbstractOIDCProtocolMapper imp
 
     @Override
     public String getHelpText() {
-        return null;
+        return "Shows a dialog to select a username (from a configured users' attribute), which can later be used in protocol mappers to overwrite claims.";
     }
 
     @Override
