@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-parent</artifactId>
-        <version>20.0.0</version>
+        <version>21.1.2</version>
     </parent>
 
     <name>Keycloak Select Username</name>
