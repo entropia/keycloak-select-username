@@ -12,7 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectUsernameEmailProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
+
+    public static final String MAPPER_MAIL_DOMAIN = "mapper.mail_domain";
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
+    static {
+        ProviderConfigProperty mailDomainProperty;
+        mailDomainProperty = new ProviderConfigProperty();
+        mailDomainProperty.setName(MAPPER_MAIL_DOMAIN);
+        mailDomainProperty.setLabel("Mail domain");
+        mailDomainProperty.setType(ProviderConfigProperty.STRING_TYPE);
+        mailDomainProperty.setHelpText("Domain which is used with the selected username to fake an email address");
+        mailDomainProperty.setDefaultValue("localhost");
+        configProperties.add(mailDomainProperty);
+    }
+
     public static final String PROVIDER_ID = "select-username-email-oidc-mapper";
 
     static {
@@ -46,7 +59,7 @@ public class SelectUsernameEmailProtocolMapper extends AbstractOIDCProtocolMappe
 
     @Override
     public String getHelpText() {
-        return "Sets an email to the mapped username + suffix";
+        return "Sets an email to a faked email address consisting of the faked username and a configurable domain";
     }
 
     @Override
@@ -68,7 +81,7 @@ public class SelectUsernameEmailProtocolMapper extends AbstractOIDCProtocolMappe
         } else {
             username = userSession.getNote("selected_username");
         }
-	String email = username + "@gulas.ch";
+        String email = username + "@" + mappingModel.getConfig().get(MAPPER_MAIL_DOMAIN);
         OIDCAttributeMapperHelper.mapClaim(token, mappingModel, email);
     }
 }
