@@ -3,6 +3,7 @@ package li.ember.selectusername;
 import jakarta.ws.rs.core.MediaType;
 import org.keycloak.Config;
 import org.keycloak.authentication.*;
+import org.keycloak.events.Errors;
 import org.keycloak.models.*;
 import org.keycloak.provider.ProviderConfigProperty;
 
@@ -40,6 +41,7 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
     @Override
     public void authenticate(AuthenticationFlowContext context) {
         AuthenticatorConfigModel config = context.getAuthenticatorConfig();
+        final ClientModel client = context.getSession().getContext().getClient();
 
         List<String> usernames = getValidUsernames(context);
 
@@ -51,16 +53,23 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
             return;
         }
 
-        if (usernames.size() == 0) {
-            context.failure(AuthenticationFlowError.ACCESS_DENIED);
+        if (usernames.isEmpty()) {
+            context.getEvent()
+                    .realm(context.getRealm())
+                    .client(client)
+                    .user(context.getUser())
+                    .error(Errors.ACCESS_DENIED);
+            context.failure(AuthenticationFlowError.ACCESS_DENIED, context.form()
+                    .setError("Access denied.")
+                    .createErrorPage(Response.Status.FORBIDDEN));
             return;
         }
 
-	if (usernames.size() == 1) {
-	    context.getAuthenticationSession().setUserSessionNote("selected_username", usernames.get(0));
-	    context.success();
-	    return;
-	}
+        if (usernames.size() == 1) {
+            context.getAuthenticationSession().setUserSessionNote("selected_username", usernames.get(0));
+            context.success();
+            return;
+        }
 
         Response challenge = context.form()
                 .setAttribute("usernames", usernames)
