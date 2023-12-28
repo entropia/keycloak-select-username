@@ -1,5 +1,6 @@
 package li.ember.selectusername;
 
+import jakarta.ws.rs.core.MediaType;
 import org.keycloak.Config;
 import org.keycloak.authentication.*;
 import org.keycloak.models.*;
@@ -7,6 +8,10 @@ import org.keycloak.provider.ProviderConfigProperty;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+import org.keycloak.representations.idm.OAuth2ErrorRepresentation;
+import org.keycloak.services.messages.Messages;
+import org.keycloak.utils.MediaTypeMatcher;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +42,14 @@ public class SelectUsernameAuthenticator implements AuthenticatorFactory, Authen
         AuthenticatorConfigModel config = context.getAuthenticatorConfig();
 
         List<String> usernames = getValidUsernames(context);
+
+        if (!MediaTypeMatcher.isHtmlRequest(context.getHttpRequest().getHttpHeaders())) {
+            context.failure(AuthenticationFlowError.ACCESS_DENIED, Response.status(Response.Status.UNAUTHORIZED.getStatusCode())
+                .entity(new OAuth2ErrorRepresentation(Messages.ACCESS_DENIED, "This client can only be accessed through HTTP."))
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build());
+            return;
+        }
 
         if (usernames.size() == 0) {
             context.failure(AuthenticationFlowError.ACCESS_DENIED);
